@@ -5,8 +5,7 @@ Jinja2
 MarkupSafe
 Pillow
 Werkzeug
-tensorflow==2.1
-tensorflow-base==2.1
+tensorflow
 numpy
 matplotlib
 keras
