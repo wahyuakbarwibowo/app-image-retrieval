@@ -5,7 +5,7 @@ Jinja2
 MarkupSafe
 Pillow
 Werkzeug
-tensorflow
+tensorflow==2.1
 numpy
 matplotlib
-keras
+gunicorn
