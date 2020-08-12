@@ -14,6 +14,7 @@
             <h1>Image Retrieval</h1>
         </div>
     </header>
+    <!-- Form -->
     <div class="container-fluid" style="margin-top:10px;">
         <div class="row ml-1">
             <div class="col-md-12">
@@ -23,8 +24,11 @@
                     <input class="btn btn-primary" type="submit" value="Cari">
                 </form>
             </div>
-
+            <!-- End Form -->
+            <!-- Gambar setelah input citra -->
             <img class="img-fluid img-thumbnail" style="display: none;" class="col-md-3" id="blah" src="" alt="your image" /> {% if query_img %}
+
+            <!-- Gambar Input -->
             <div class="col-md-3" style="margin-bottom: 5px;">
                 <div class="col-centered">
                     {# citra input #}
@@ -34,6 +38,7 @@
             {% endif %}
         </div>
         <hr>
+        <!-- Citra-citra Hasil -->
         <hr> {% if data %}
         <div class="row">
             {% for result in data %}
@@ -57,7 +62,6 @@
                 reader.onload = function(e) {
                     $('#blah')
                         .attr('src', e.target.result);
-
                 };
                 document.getElementById("blah").style.display = "block";
 

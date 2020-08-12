@@ -12,6 +12,7 @@ LIST_PATH_IMAGE_DATASET = [
 ]
 
 def checkSimilarity(input_img, dataset_img):
+    # Mendapatkan jumlah citra yang ada di database
     num_of_database = dataset_img.shape[0]
 
     # penampung nilai kemiripan
@@ -27,39 +28,27 @@ def checkSimilarity(input_img, dataset_img):
         val_of_sim = np.append(val_of_sim, [nilai_kemiripan])
 
     val_of_sim_sort = np.sort(val_of_sim)  # pengurutan nilai kemiripan
+
     indices_val_of_sim = np.argsort(val_of_sim)  # index pengurutan nilai kemiripan
 
     return indices_val_of_sim
 
-def imageRetrieval(input_img, dataset_img):
-    num_of_database, row, column, channels = dataset_img.shape
-    num_of_input = input_img.shape[0]
-
-    # Pengubahan dimensi, misal 10000x64x64x1 menjadi 10000x4096
-    dataset_img = dataset_img.reshape(num_of_database, (row * column),
-                                      channels)
-    input_img = input_img.reshape(num_of_input, (row * column), channels)
-
-    # Pemanggilan fungsi similaritas
-    indices_val_of_sim = checkSimilarity(input_img, dataset_img)  # Mendapatkan nilai dan index
-    
-    return indices_val_of_sim
-
 def mainImageRetrieval(image_input):
     ENCODER_MODEL = load_model('./static/assets/model/model.h5')
-    DATASET_ARRAY = np.load('./static/assets/array-datasets/dataset_kecil_64x64.npy')
+    DATASET_ARRAY = np.load('./static/assets/array-datasets/dataset_kecil_64x64.npy').astype('float32') / 255
+    # print(DATASET_ARRAY[1])
 
     # mengubah ukuran dari 64x64x3 menjadi 1x64x64x3
     image_input = image_input.reshape(
         1, image_input.shape[0], image_input.shape[1], image_input.shape[2])
+    print(image_input[0])
 
     # predict 
     feature_image_input = ENCODER_MODEL.predict(image_input)
     feature_image_dataset = ENCODER_MODEL.predict(DATASET_ARRAY)
-    print(feature_image_input.shape)
     
     # backend.clear_session()
-    indices_val_of_sim = imageRetrieval(feature_image_input, feature_image_dataset)
+    indices_val_of_sim = checkSimilarity(feature_image_input, feature_image_dataset)
 
     return indices_val_of_sim
 
@@ -75,8 +64,7 @@ def index():
         img.save(uploaded_img_path)
 
         img_input = img.resize((64, 64), Image.ANTIALIAS) # citra diresize ke 64x64
-        image_input = np.array(img_input).astype('float32') // 255 # normalisasi from 0-255 to 0-1
-        print(image_input.shape)
+        image_input = np.array(img_input).astype('float32') / 255 # normalisasi from 0-255 to 0-1
 
         #proses retrieval
         indices_val_of_sim = mainImageRetrieval(image_input=image_input)
