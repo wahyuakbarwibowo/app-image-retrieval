@@ -1,13 +1,14 @@
 from flask import Flask, render_template, request
 from tensorflow.keras.models import load_model
 import numpy as np
-import PIL
+from PIL import Image
+import os
 
 app = Flask(__name__)
 
-folder = ".\\assets\\images\\dataset\\"
+folder_dataset = "./static/assets/images/dataset/"
 LIST_PATH_IMAGE_DATASET = [
-    f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))
+    f for f in os.listdir(folder_dataset) if os.path.isfile(os.path.join(folder_dataset, f))
 ]
 
 def checkSimilarity(input_img, dataset_img):
@@ -31,8 +32,6 @@ def checkSimilarity(input_img, dataset_img):
     return indices_val_of_sim
 
 def imageRetrieval(input_img, dataset_img):
-
-    
     num_of_database, row, column, channels = dataset_img.shape
     num_of_input = input_img.shape[0]
 
@@ -47,32 +46,37 @@ def imageRetrieval(input_img, dataset_img):
     return indices_val_of_sim
 
 def mainImageRetrieval(image_input):
-    ENCODER_MODEL = load_model('.\\assets\\model\\model.h5')
-    DATASET_FEATURES_ARRAY = np.load('assets\\array-dataset\\dataset_kecil_64x64.npy')
+    ENCODER_MODEL = load_model('./static/assets/model/model.h5')
+    DATASET_ARRAY = np.load('./static/assets/array-datasets/dataset_kecil_64x64.npy')
 
     # mengubah ukuran dari 64x64x3 menjadi 1x64x64x3
     image_input = image_input.reshape(
         1, image_input.shape[0], image_input.shape[1], image_input.shape[2])
+
+    # predict 
+    feature_image_input = ENCODER_MODEL.predict(image_input)
+    feature_image_dataset = ENCODER_MODEL.predict(DATASET_ARRAY)
+    print(feature_image_input.shape)
     
     # backend.clear_session()
-    indices_val_of_sim = imageRetrieval(image_input, DATASET_FEATURES_ARRAY)
+    indices_val_of_sim = imageRetrieval(feature_image_input, feature_image_dataset)
 
     return indices_val_of_sim
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    path_hasil = 'static/assets/hasil/'
     if request.method == 'POST':
 
-        file = request.files['query_img']
+        file = request.files['file']
 
         img = Image.open(file.stream)
         uploaded_img_path = 'static/assets/images/upload/'+ file.filename
         img.save(uploaded_img_path)
 
-        img_input = img.resize((64, 64), PIL.Image.ANTIALIAS) # citra diresize ke 64x64
+        img_input = img.resize((64, 64), Image.ANTIALIAS) # citra diresize ke 64x64
         image_input = np.array(img_input).astype('float32') // 255 # normalisasi from 0-255 to 0-1
+        print(image_input.shape)
 
         #proses retrieval
         indices_val_of_sim = mainImageRetrieval(image_input=image_input)
@@ -88,3 +92,6 @@ def index():
         return render_template('index.html', query_img=query_img, data=result)
     else:
         return render_template('index.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)

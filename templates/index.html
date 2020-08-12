@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Retrieval</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+
+<body>
+    <header>
+        <div class="jumbotron">
+            <h1>Image Retrieval</h1>
+        </div>
+    </header>
+    <div class="container-fluid" style="margin-top:10px;">
+        <div class="row ml-1">
+            <div class="col-md-12">
+                <form class="form-inline" method="post" enctype="multipart/form-data">
+                    <label for="file" class="mb-2 mr-sm-2">Unggah Gambar</label>
+                    <input type="file" name="file" id="file" class="form-control mb-2 mr-sm-2" onchange="readURL(this)">
+                    <input class="btn btn-primary" type="submit" value="Cari">
+                </form>
+            </div>
+
+            <img class="img-fluid img-thumbnail" style="display: none;" class="col-md-3" id="blah" src="" alt="your image" /> {% if query_img %}
+            <div class="col-md-3" style="margin-bottom: 5px;">
+                <div class="col-centered">
+                    {# citra input #}
+                    <img class="img-fluid img-thumbnail" src="{{ url_for('static', filename='assets/images/upload/') }}{{ query_img }}" alt="query image">
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <hr>
+        <hr> {% if data %}
+        <div class="row">
+            {% for result in data %}
+            <div class="col-sm-4 col-md-3">
+                {# Tampil citra ouput #}
+                <a class="lightbox" href="{{url_for('static', filename='assets/images/dataset/')}}{{result}}">
+                    <img class="img-fluid img-thumbnail" style="margin-bottom: 5px;" src="{{url_for('static', filename='assets/images/dataset/')}}{{result}}" alt="result">
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+    </div>
+    <script>
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                console.log(input.files)
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                    $('#blah')
+                        .attr('src', e.target.result);
+
+                };
+                document.getElementById("blah").style.display = "block";
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    <script class="jsbin" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script class="jsbin" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.0/jquery-ui.min.js"></script>
+</body>
+
+</html>
