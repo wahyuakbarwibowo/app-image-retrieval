@@ -36,7 +36,6 @@ def checkSimilarity(input_img, dataset_img):
 def mainImageRetrieval(image_input):
     ENCODER_MODEL = load_model('./static/assets/model/model.h5')
     DATASET_ARRAY = np.load('./static/assets/array-datasets/dataset_kecil_64x64.npy').astype('float32') / 255
-    # print(DATASET_ARRAY[1])
 
     # mengubah ukuran dari 64x64x3 menjadi 1x64x64x3
     image_input = image_input.reshape(
